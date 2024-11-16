@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Library Catalog - ECNVHS Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse and search our comprehensive library catalog with advanced filtering and AI-powered recommendations.">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <style>
+    :root {
+      --primary-color: #2E86DE;
+      --secondary-color: #3CB371;
+      --accent-color: #E74C3C;
+      --background-color: #F5F6FA;
+      --text-color: #2C3E50;
+      --card-background: #FFFFFF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background-color);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem 0;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: space-between;
+      list-style-type: none;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .catalog-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .filters {
+      background-color: var(--card-background);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      height: fit-content;
+    }
+
+    .filter-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-section h3 {
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-option input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid var(--secondary-color);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .search-button {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-button:hover {
+      background-color: #2980B9;
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .result-card {
+      background-color: var(--card-background);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .book-cover {
+      width: 120px;
+      height: 180px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .book-info h3 {
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    .book-meta {
+      color: var(--secondary-color);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .book-description {
+      margin-bottom: 1rem;
+    }
+
+    .availability {
+      text-align: right;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .status.available {
+      background-color: #2ECC71;
+      color: white;
+    }
+
+    .status.unavailable {
+      background-color: #E74C3C;
+      color: white;
+    }
+
+    .action-button {
+      display: block;
+      padding: 0.5rem 1rem;
+      background-color: var(--accent-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .action-button:hover {
+      background-color: #2980B9;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .page-button {
+      padding: 0.5rem 1rem;
+      background-color: var(--card-background);
+      border: 1px solid var(--secondary-color);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .page-button:hover {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .page-button.active {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      float: right;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--text-color);
+    }
+
+    @media screen and (max-width: 768px) {
+      .catalog-container {
+        grid-template-columns: 1fr;
+      }
+
+      nav ul {
+        flex-direction: column;
+      }
+      
+      nav ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .result-card {
+        grid-template-columns: 1fr;
+      }
+
+      .book-cover {
+        width: 100%;
+        height: 200px;
+      }
+
+      .availability {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="container">
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Catalog</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html">Login</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="catalog-container">
+        <aside class="filters">
+          <div class="filter-section">
+            <h3>Resource Type</h3>
+            <div class="filter-option">
+              <input type="checkbox" id="books" v-model="filters.books">
+              <label for="books">Books</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="ebooks" v-model="filters.ebooks">
+              <label for="ebooks">E-Books</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="journals" v-model="filters.journals">
+              <label for="journals">Journals</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="articles" v-model="filters.articles">
+              <label for="articles">Articles</label>
+            </div>
+          </div>
+        </aside>
+
+        <div class="main-content">
+          <div class="search-bar">
+            <input 
+              type="text" 
+              class="search-input" 
+              v-model="searchQuery" 
+              placeholder="Search by title, author, ISBN..."
+              @keyup.enter="search"
+            >
+            <button class="search-button" @click="search">Search</button>
+          </div>
+
+          <div class="results">
+            <div class="result-card" v-for="book in paginatedBooks" :key="book.id">
+              <div class="book-cover">
+                <img :src="`./Books/${book.id}/cover.jpg`" :alt="book.title">
+              </div>
+              <div class="book-info">
+                <h3>{{ book.title }}</h3>
+                <div class="book-meta">
+                  <p>Author: {{ book.author }}</p>
+                  <p>Published: {{ book.year }}</p>
+                </div>
+                <p class="book-description">{{ book.description }}</p>
+              </div>
+              <div class="availability">
+                <span class="status" :class="book.available ? 'available' : 'unavailable'">
+                  {{ book.available ? 'Available' : 'Checked Out' }}
+                </span>
+                <a class="action-button" @click="viewDetails(book)">View Details</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <button class="page-button" @click="prevPage" :disabled="currentPage === 1">&lt;</button>
+            <button 
+              v-for="n in totalPages" 
+              :key="n" 
+              class="page-button"
+              :class="{ active: currentPage === n }"
+              @click="goToPage(n)"
+            >
+              {{ n }}
+            </button>
+            <button class="page-button" @click="nextPage" :disabled="currentPage === totalPages">&gt;</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" v-if="selectedBook" @click="closeDetails">
+        <div class="modal-content" @click.stop>
+          <span class="modal-close" @click="closeDetails">&times;</span>
+          <h2>{{ selectedBook.title }}</h2>
+          <div class="book-meta">
+            <p><strong>Author:</strong> {{ selectedBook.author }}</p>
+            <p><strong>Published:</strong> {{ selectedBook.year }}</p>
+            <p><strong>Status:</strong> {{ selectedBook.available ? 'Available' : 'Checked Out' }}</p>
+          </div>
+          <div class="book-description">
+            <h3>Description</h3>
+            <p>{{ selectedBook.description }}</p>
+          </div>
+          <div class="book-details">
+            <h3>Additional Details</h3>
+            <p><strong>ISBN:</strong> {{ selectedBook.isbn }}</p>
+            <p><strong>Type:</strong> {{ selectedBook.type }}</p>
+            <p><strong>Format:</strong> {{ selectedBook.format }}</p>
+            <p><strong>Language:</strong> {{ selectedBook.language }}</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+new Vue({
+  el: '#app',
+  data: {
+    searchQuery: '',
+    currentPage: 1,
+    itemsPerPage: 5,
+    selectedBook: null,
+    filters: {
+      books: false,
+      ebooks: false,
+      journals: false,
+      articles: false,
+      sciences: false,
+      humanities: false,
+      socialSciences: false,
+      available: false,
+      online: false
+    },
+    allBooks: [
+      {
+        id: 1,
+        title: "Knowledge",
+        author: "Michael Welbourne",
+        year: "2014",
+        isbn: "9781317489801",
+        description: "This book will be essential reading for anyone interested in epistemology, the philosophy of language, or the intersection between the two areas.",
+        available: true,
+        type: "Book",
+        format: "Hardcover",
+        language: "English"
+      },
+      {
+        id: 2,
+        title: "The Power of a Teacher: Restoring Hope and Well-Being to Change Lives",
+        author: "Adam L. Saenz",
+        year: "2012",
+        isbn: "9781937654603",
+        description: "Read the stories of real people whose lives were changed by real teachers.",
+        available: true,
+        type: "Book",
+        format: "Paperback",
+        language: "English"
+      },
+      {
+        id: 3,
+        title: "Doing School: How We Are Creating a Generation of Stressed-Out, Materialistic, and Miseducated Students",
+        author: "Denise Clark Pope",
+        year: "2008",
+        isbn: "99780300130584",
+        description: "This book offers a highly revealing and troubling view of today's high school students and the ways they pursue high grades and success.",
+        available: true,
+        type: "Journal",
+        format: "Book",
+        language: "English"
+      },
+      {
+        id: 4,
+        title: "Mental Health A Pocket Guide",
+        author: "Debra O’Kane",
+        year: "2021",
+        isbn: "9780729589512",
+        description: "Mental Health: A pocket guide delivers a comprehensive overview of the relevant concepts vital to contemporary mental healthcare. With a clear focus on the consumer, it covers the issues faced by people living with mental illness, as well as best practice approaches for primary health, first responders and multidisciplinary healthcare professionals.",
+        available: true,
+        type: "Journal",
+        format: "Book",
+        language: "English"
+      },
+      {
+        id: 5,
+        title: "Happiness",
+        author: "Jeffrey R. Di Leo",
+        year: "2021",
+        isbn: "9781000529487",
+        description: "This book introduces the reader to the ways in which happiness has been explored in philosophy and literature for thousands of years, in order to understand the newest theoretical approaches to happiness.",
+        available: true,
+        type: "EBook",
+        format: "Digital",
+        language: "English"
+      }
+    ]
+  },
+  computed: {
+    filteredBooks() {
+      return this.allBooks.filter(book => {
+        if (this.searchQuery && !book.title.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
+            !book.author.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
+            !book.isbn.includes(this.searchQuery)) {
+          return false;
+        }
+
+        if ((this.filters.books && book.type === "Book") ||
+            (this.filters.ebooks && book.type === "EBook") ||
+            (this.filters.journals && book.type === "Journal") ||
+            (this.filters.articles && book.type === "Article")) {
+        } else if (this.filters.books || this.filters.ebooks || 
+                   this.filters.journals || this.filters.articles) {
+          return false;
+        }
+
+        if (this.filters.available && !book.available) {
+          return false;
+        }
+
+        if (this.filters.online && book.location !== "Online Access") {
+          return false;
+        }
+
+        return true;
+      });
+    },
+    totalPages() {
+      return Math.ceil(this.filteredBooks.length / this.itemsPerPage);
+    },
+    paginatedBooks() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredBooks.slice(start, end);
+    }
+  },
+  methods: {
+    search() {
+      this.currentPage = 1;
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    goToPage(page) {
+      this.currentPage = page;
+    },
+    viewDetails(book) {
+      this.selectedBook = book;
+    },
+    closeDetails() {
+      this.selectedBook = null;
+    }
+  },
+  watch: {
+    filters: {
+      deep: true,
+      handler() {
+        this.currentPage = 1;
+      }
+    }
+  }
+});
+  </script>
+</body>
+</html>

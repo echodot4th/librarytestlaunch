@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Reservation - ECNVHS Library</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.js"></script>
+  <style>
+    :root {
+      --primary-color: #2E86DE;
+      --secondary-color: #3CB371;
+      --accent-color: #E74C3C;
+      --background-color: #F5F6FA;
+      --text-color: #2C3E50;
+      --card-background: #FFFFFF;
+      --success-color: #2ECC71;
+      --warning-color: #F1C40F;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--background-color);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      border-width: 4px;
+      border-color: black;
+      border-style: inset;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem 0;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: space-between;
+      list-style-type: none;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem 0;
+    }
+
+    .book-card {
+      background-color: var(--card-background);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .book-cover {
+      width: 100%;
+      height: 200px;
+      background-color: #ddd;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+    }
+
+    .book-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 15px;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+    }
+
+    .status-available {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .status-unavailable {
+      background-color: var(--warning-color);
+      color: var(--text-color);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .pagination button {
+      padding: 0.5rem 1rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .details-dropdown {
+      margin-top: 1rem;
+    }
+
+    .details-content {
+      padding: 1rem;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+
+    .reservation-form {
+      background-color: var(--card-background);
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .reserve-button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .reserve-button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .success-icon {
+      color: var(--success-color);
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .reservation-details {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .reservation-details p {
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="container">
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="catalog.html">Catalog</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html">Login</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Success Modal -->
+    <div v-if="showSuccessModal" class="modal-overlay" @click="showSuccessModal = false">
+      <div class="modal-content" @click.stop>
+        <button @click="showSuccessModal = false" class="close-button">&times;</button>
+        <div class="success-icon">✓</div>
+        <h2 style="text-align: center; color: var(--success-color)">Book Reserved</h2>
+        <div class="reservation-details">
+          <p><strong>Book:</strong> {{ currentReservation.bookTitle }}</p>
+          <p><strong>Borrower:</strong> {{ currentReservation.borrowerName }}</p>
+          <p><strong>School ID:</strong> {{ currentReservation.schoolId }}</p>
+          <p><strong>Program & Section:</strong> {{ currentReservation.programSection }}</p>
+          <p><strong>Reservation Date:</strong> {{ formatDate(currentReservation.reservationDate) }}</p>
+          <p><strong>Reserved on:</strong> {{ formatDate(currentReservation.timestamp) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <main class="container">
+      <h1 style="text-align: center; margin: 2rem 0;">Book Reservation</h1>
+      
+      <div class="book-grid">
+        <div v-for="book in currentPageBooks" :key="book.id" class="book-card">
+          <div class="book-cover">
+            <img :src="book.image" :alt="'Cover of ' + book.title" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <h3>{{ book.title }}</h3>
+          <p>By {{ book.author }}</p>
+          <span :class="['book-status', book.available ? 'status-available' : 'status-unavailable']">
+            {{ book.available ? 'Available' : 'Unavailable' }}
+          </span>
+          
+          <div class="details-dropdown">
+            <button @click="book.showDetails = !book.showDetails" class="reserve-button">
+              {{ book.showDetails ? 'Hide Details' : 'View Details' }}
+            </button>
+            
+            <div v-if="book.showDetails" class="details-content">
+              <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+              <p><strong>Genre:</strong> {{ book.genre }}</p>
+              <p><strong>Publication Year:</strong> {{ book.year }}</p>
+              
+              <div v-if="book.available" class="reservation-form">
+                <div class="form-group">
+                  <label>Full Name:</label>
+                  <input type="text" v-model="book.borrowerName" required>
+                </div>
+                <div class="form-group">
+                  <label>School ID:</label>
+                  <input type="text" v-model="book.schoolId" required>
+                </div>
+                <div class="form-group">
+                  <label>Program & Section:</label>
+                  <input type="text" v-model="book.programSection" required>
+                </div>
+                <div class="form-group">
+                  <label>Reservation Date:</label>
+                  <input type="date" v-model="book.reservationDate" :min="today" required>
+                </div>
+                <button 
+                  @click="reserveBook(book)"
+                  class="reserve-button"
+                  :disabled="!isFormValid(book)">
+                  Reserve Book
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <button 
+          @click="currentPage--" 
+          :disabled="currentPage === 1">
+          Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button 
+          @click="currentPage++" 
+          :disabled="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+    </main>
+
+    <footer style="border-width: 4px; border-color: black; border-style: inset; background-color: var(--primary-color); color: white; text-align: center; padding: 1rem 0; margin-top: 2rem;">
+      <div class="container">
+        <p>&copy; 2024 ECNVHS Library. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        currentPage: 1,
+        booksPerPage: 10,
+        showSuccessModal: false,
+        currentReservation: null,
+        books: [
+          {
+            id: 1,
+            title: "The Vanishing Half",
+            author: "Brit Bennett",
+            isbn: "9780525536963",
+            genre: "Fiction",
+            year: 2020,
+            available: true,
+            showDetails: false,
+            image: "./Books/book1.jpg"
+          },
+  {
+    id: 2,
+    title: "Klara and the Sun",
+    author: "Kazuo Ishiguro",
+    isbn: "9780593318171",
+    genre: "Science Fiction",
+    year: 2021,
+    available: false,
+    showDetails: false,
+    image: "./Books/book2.jpg"
+  },
+  {
+    id: 3,
+    title: "The Midnight Library",
+    author: "Matt Haig",
+    isbn: "9780525559474",
+    genre: "Fantasy",
+    year: 2020,
+    available: true,
+    showDetails: false,
+    image: "./Books/book3.jpg"
+  },
+  {
+    id: 4,
+    title: "Malibu Rising",
+    author: "Taylor Jenkins Reid",
+    isbn: "9780593139442",
+    genre: "Fiction",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book4.jpg" 
+  },
+  {
+    id: 5,
+    title: "Project Hail Mary",
+    author: "Andy Weir",
+    isbn: "9780593135208",
+    genre: "Science Fiction",
+    year: 2021,
+    available: false,
+    showDetails: false,
+    image: "./Books/book5.jpg"
+  },
+  {
+    id: 6,
+    title: "The Last House on Needless Street",
+    author: "Catriona Ward",
+    isbn: "9781250815204",
+    genre: "Thriller",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book6.jpg" 
+  },
+  {
+    id: 7,
+    title: "The Four Winds",
+    author: "Kristin Hannah",
+    isbn: "9781250178602",
+    genre: "Historical Fiction",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book7.jpg"
+  },
+  {
+    id: 8,
+    title: "The Invisible Life of Addie LaRue",
+    author: "V.E. Schwab",
+    isbn: "9780765387561",
+    genre: "Fantasy",
+    year: 2020,
+    available: true,
+    showDetails: false,
+    image: "./Books/book8.jpg"
+  },
+  {
+    id: 9,
+    title: "The Paper Palace",
+    author: "Miranda Cowley Heller",
+    isbn: "9780593133761",
+    genre: "Fiction",
+    year: 2021,
+    available: false,
+    showDetails: false,
+    image: "./Books/book9.jpg" 
+  },
+  {
+    id: 10,
+    title: "The Song of Achilles",
+    author: "Madeline Miller",
+    isbn: "9780062060624",
+    genre: "Mythology",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book10.jpg"
+  },
+  {
+    id: 11,
+    title: "Beautiful World, Where Are You",
+    author: "Sally Rooney",
+    isbn: "9780571365420",
+    genre: "Fiction",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book11.jpg"
+  },
+  {
+    id: 12,
+    title: "The Last Thing He Told Me",
+    author: "Laura Dave",
+    isbn: "9781501171345",
+    genre: "Thriller",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book12.jpg"
+  },
+  {
+    id: 13,
+    title: "The Guest List",
+    author: "Emma Cline",
+    isbn: "9780812998603",
+    genre: "Fiction",
+    year: 2021,
+    available: false,
+    showDetails: false,
+    image: "./Books/book13.jpg"
+  },
+  {
+    id: 14,
+    title: "The Maidens",
+    author: "Alex Michaelides",
+    isbn: "9781250304440",
+    genre: "Thriller",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book14.jpg"
+  },
+  {
+    id: 15,
+    title: "The Lincoln Highway",
+    author: "Amor Towles",
+    isbn: "9780735222359",
+    genre: "Historical Fiction",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book15.jpg"
+  },
+  {
+    id: 16,
+    title: "Cloud Cuckoo Land",
+    author: "Anthony Doerr",
+    isbn: "9781982168438",
+    genre: "Fiction",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book16.jpg"
+  },
+  {
+    id: 17,
+    title: "The Book of Form and Emptiness",
+    author: "Ruth Ozeki",
+    isbn: "9780593653960",
+    genre: "Fiction",
+    year: 2022,
+    available: false,
+    showDetails: false,
+    image: "./Books/book17.jpg"
+  },
+  {
+    id: 18,
+    title: "Lessons in Chemistry",
+    author: "Bonnie Garmus",
+    isbn: "9780594801012",
+    genre: "Fiction",
+    year: 2022,
+    available: true,
+    showDetails: false,
+    image: "./Books/book18.jpg"
+  },
+  {
+    id: 19,
+    title: "The Island of Missing Trees",
+    author: "Elif Shafak",
+    isbn: "9781635574440",
+    genre: "Fiction",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book19.jpg"
+  },
+  {
+    id: 20,
+    title: "The Seven Husbands of Evelyn Hugo",
+    author: "Taylor Jenkins Reid",
+    isbn: "9781501139239",
+    genre: "Historical Fiction",
+    year: 2017,
+    available: true,
+    showDetails: false,
+    image: "./Books/book20.jpg"
+  },
+  {
+    id: 21,
+    title: "The Paris Apartment",
+    author: "Lucy Foley",
+    isbn: "9780063033652",
+    genre: "Thriller",
+    year: 2022,
+    available: true,
+    showDetails: false,
+    image: "./Books/book21.jpg"
+  },
+  {
+    id: 22,
+    title: "The Night Circus",
+    author: "Erin Morgenstern",
+    isbn: "9780385534635",
+    genre: "Fantasy",
+    year: 2011,
+    available: false,
+    showDetails: false,
+    image: "./Books/book22.jpg"
+  },
+  {
+    id: 23,
+    title: "A Gentle Reminder",
+    author: "Bianca Sparacino",
+    isbn: "9789355438485",
+    genre: "Personal Development",
+    year: 2021,
+    available: true,
+    showDetails: false,
+    image: "./Books/book23.jpg"
+  },
+  {
+    id: 24,
+    title: "The Chain",
+    author: "Adrian McKinty",
+    isbn: "9780316499680",
+    genre: "Thriller",
+    year: 2019,
+    available: true,
+    showDetails: false,
+    image: "./Books/book24.jpg"
+  },
+  {
+    id: 25,
+    title: "A Court of Thorns and Roses",
+    author: "Sarah J. Maas",
+    isbn: "9781635575569",
+    genre: "Fantasy",
+    year: 2015,
+    available: true,
+    showDetails: false,
+    image: "./Books/book25.jpg"
+  },
+  {
+    id: 26,
+    title: "Love in the Time of Cholera",
+    author: "Gabriel G. Garcia",
+    isbn: "9781400034680",
+    genre: "Fiction",
+    year: 2003,
+    available: true,
+    showDetails: false,
+    image: "./Books/book26.jpg"
+  },
+  {
+    id: 27,
+    title: "Tiny Beautiful Things: Advice from Dear Sugar",
+    author: "Cheryl Strayed",
+    isbn: "9780593685211",
+    genre: "Personal Development",
+    year: 2012,
+    available: false,
+    showDetails: false,
+    image: "./Books/book27.jpg"
+  },
+  {
+    id: 28,
+    title: "Normal People",
+    author: "Sally Rooney",
+    isbn: "9781984822178",
+    genre: "Fiction",
+    year: 2019,
+    available: true,
+    showDetails: false,
+    image: "./Books/book28.jpg"
+  },
+  {
+    id: 29,
+    title: "All the Light We Cannot See",
+    author: "Anthony Doerr",
+    isbn: "9781476746586",
+    genre: "Historical",
+    year: 2014,
+    available: true,
+    showDetails: false,
+    image: "./Books/book29.jpg"
+  },
+  {
+    id: 30,
+    title: "Anxious People",
+    author: "Fredrik Backman",
+    isbn: "9781982169633",
+    genre: "Mystery",
+    year: 2019,
+    available: true,
+    showDetails: false,
+    image: "./Books/book30.jpg"
+  }        
+]
+      },
+      computed: {
+        totalPages() {
+          return Math.ceil(this.books.length / this.booksPerPage);
+        },
+        currentPageBooks() {
+          const start = (this.currentPage - 1) * this.booksPerPage;
+          const end = start + this.booksPerPage;
+          return this.books.slice(start, end);
+        },
+        today() {
+          return new Date().toISOString().split('T')[0];
+        }
+      },
+      methods: {
+        isFormValid(book) {
+          return book.borrowerName && 
+                 book.schoolId && 
+                 book.programSection && 
+                 book.reservationDate;
+        },
+        
+        reserveBook(book) {
+          if (!this.isFormValid(book)) {
+            alert('Please fill in all required fields');
+            return;
+          }
+
+          const reservation = {
+            bookId: book.id,
+            bookTitle: book.title,
+            borrowerName: book.borrowerName,
+            schoolId: book.schoolId,
+            programSection: book.programSection,
+            reservationDate: book.reservationDate,
+            timestamp: new Date().toISOString()
+          };
+
+          let reservations = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+          reservations.push(reservation);
+          localStorage.setItem('bookReservations', JSON.stringify(reservations));
+
+          book.available = false;
+          this.currentReservation = reservation;
+          this.showSuccessModal = true;
+          
+          book.borrowerName = '';
+          book.schoolId = '';
+          book.programSection = '';
+          book.reservationDate = '';
+          book.showDetails = false;
+        },
+        
+        formatDate(date) {
+          return new Date(date).toLocaleDateString();
+        },
+        
+        cancelReservation(bookId) {
+          let reservations = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+          reservations = reservations.filter(r => r.bookId !== bookId);
+          localStorage.setItem('bookReservations', JSON.stringify(reservations));
+          
+          const book = this.books.find(b => b.id === bookId);
+          if (book) {
+            book.available = true;
+          }
+        }
+      },
+      mounted() {
+        const reservations = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+        
+        reservations.forEach(reservation => {
+          const book = this.books.find(b => b.id === reservation.bookId);
+          if (book) {
+            book.available = false;
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<html><head><base href="index.html">
+<title>ECNVHS Library</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Welcome to the ECNVHS Library. Access our vast collection, AI-powered study assistant, and cutting-edge library services.">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<style>
+:root {
+  --primary-color: #2E86DE;
+  --secondary-color: #3CB371;  
+  --accent-color: #E74C3C;    
+  --background-color: #F5F6FA; 
+  --text-color: #2C3E50;      
+  --card-background: #FFFFFF; 
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-image: url('library-background.jpg');
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+header {
+  border-width: 4px;
+  border-color: black;
+  border-style: inset;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 0;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+main {
+  padding: 2rem 0;
+}
+
+h1, h2, h3 {
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 1rem;
+}
+
+.hero {
+  background-size: cover;
+  height: 100%;
+  background-position: center;
+  color: white;
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-container {
+  margin-top: 2rem;
+}
+
+.search-input {
+  width: 60%;
+  padding: 0.70rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.search-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #2980B9;
+}
+
+footer {
+  border-width: 4px;
+  border-style: inset;
+  border-color: black;
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+
+@media screen and (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+  }
+  
+  nav ul li {
+    margin-bottom: 0.5rem;
+  }
+  .search-input {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-button {
+    width: 100%;
+    border-radius: 4px;
+  }
+}
+</style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="container">
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="catalog.html">Catalog</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html">Login</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1>Welcome to the ECNVHS Library</h1>
+          <p>Find, Reserve, and Read.</p>
+          <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for books, articles, or resources...">
+            <button class="search-button">Search</button>
+          </div>
+        </div>
+      </section>
+
+     </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 ECNVHS Library. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
